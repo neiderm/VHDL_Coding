@@ -16,8 +16,9 @@
 -- Revision 0.01 - File Created
 -- Additional Comments:
 -- 
+-- neiderm: drive LEDs from 16-bit counter with synchronous-clear
+--
 ----------------------------------------------------------------------------------
-
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -39,24 +40,26 @@ entity top is
 end top;
 
 architecture Behavioral of top is
-    signal ledb : std_logic_vector(15 downto 0);
-    signal counter : unsigned(15 downto 0);
+    signal ledb : std_logic_vector(31 downto 0);
+    signal counter : unsigned(31 downto 0);
 begin
 
-    process(clk, ledb) -- [Synth 8-614] signal 'ledb' is read in the process but is not in the sensitivity list
+    led <= ledb(31 downto 16);
+
+    process(clk)
+        --variable v16 : unsigned(15 downto 0);
     begin
         if (clk'event and clk = '1') then
 
             ledb <= std_logic_vector(counter);
 
-             if (reset = '1') then   -- synchronous clear
-                 counter <= (others => '0');
-             else
+            if (reset = '1') then   -- synchronous clear
+                counter <= (others => '0');
+            else
                 counter <= counter + 1;
-             end if;
+            end if;
         end if;
-
-        led <= ledb;
     end process;
 
 end Behavioral;
+
