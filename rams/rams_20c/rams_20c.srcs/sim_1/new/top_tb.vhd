@@ -41,6 +41,7 @@ architecture Behavioral of top_tb is
         port (clk   : in std_logic;
               reset : in std_logic;
               --sw    : in std_logic_vector (15 downto 0);
+              btn   : in std_logic_vector (3 downto 0);
               led   : out std_logic_vector (15 downto 0));
     end component;
 
@@ -48,6 +49,7 @@ architecture Behavioral of top_tb is
     signal reset : std_logic;
      -- initial condition of sw must be in known state!
     --signal sw    : std_logic_vector (15 downto 0) := "0000101001011010"; --  (others => '0');
+    signal btn   : std_logic_vector (3 downto 0) := (others => '0');
     signal led   : std_logic_vector (15 downto 0);
 begin
 
@@ -59,6 +61,7 @@ begin
     port map (clk   => clk,
               reset => reset,
               --sw    => sw,
+              btn   => btn,
               led   => led);
 
 end Behavioral;

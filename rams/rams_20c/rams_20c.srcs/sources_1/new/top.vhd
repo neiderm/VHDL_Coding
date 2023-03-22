@@ -31,35 +31,32 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity top is
-    generic( constant CNTR_BITS : integer := 30; -- 24 (~10ms to sim)
+    generic( constant CNTR_BITS : integer := 29; -- 24 (~10ms to sim)
              constant ADDR_BITS : integer := 6);
     Port ( reset : in STD_LOGIC;
            clk   : in STD_LOGIC;
+           btn   : in STD_LOGIC_VECTOR (3 downto 0);
            led   : out STD_LOGIC_VECTOR (15 downto 0));
 end top;
 
 architecture Behavioral of top is
 
     -- use upper bits of large counter to address a pattern generator ROM
-    signal address : std_logic_vector (5 downto 0);
+    signal address : std_logic_vector (ADDR_BITS-1 downto 0);
     signal counter : std_logic_vector (CNTR_BITS-1 downto 0);
 
     -- registers to handle the data driving the LEDs
     signal romdata : std_logic_vector (31 downto 0);
-    signal ledout  : std_logic_vector (15 downto 0);
 begin
-    led <= ledout;
+
+    led <= romdata(15 downto 0) when btn(3 downto 0) = "0000" else romdata(31 downto 16);
 
     process(clk)
     begin
         if (clk'event and clk = '1') then
-            -- only uses upper or lower word16 (todo use a MUX)
-            ledout <= romdata(15 downto 0);
-            --ledout <= romdata(31 downto 16);
-
             -- synchronise address to avoid DRC warnings Warning The RAMB18E1  which is driven by a register has an active asychronous set or rese ;)
             --address <= counter(31 downto 26); -- 32-6=26
-            address <= counter(CNTR_BITS-1 downto CNTR_BITS-ADDR_BITS); -- leave highest counter bit for bank selection
+            address <= counter(CNTR_BITS-1 downto CNTR_BITS-ADDR_BITS);
         end if;
     end process;
 
