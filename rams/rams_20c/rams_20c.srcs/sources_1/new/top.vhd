@@ -31,34 +31,53 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity top is
-    Port ( --reset : in STD_LOGIC;
-           clk : in STD_LOGIC;
-           led : out STD_LOGIC_VECTOR (15 downto 0));
+    generic( constant CNTR_BITS : integer := 30; -- 24 (~10ms to sim)
+             constant ADDR_BITS : integer := 6);
+    Port ( reset : in STD_LOGIC;
+           clk   : in STD_LOGIC;
+           led   : out STD_LOGIC_VECTOR (15 downto 0));
 end top;
 
 architecture Behavioral of top is
 
-    signal counter : unsigned(32-1 downto 0);
+    -- use upper bits of large counter to address a pattern generator ROM
+    signal address : std_logic_vector (5 downto 0);
+    signal counter : std_logic_vector (CNTR_BITS-1 downto 0);
 
-    signal odata : std_logic_vector (31 downto 0);
+    -- registers to handle the data driving the LEDs
+    signal romdata : std_logic_vector (31 downto 0);
+    signal ledout  : std_logic_vector (15 downto 0);
 begin
-
-    led(15 downto 0) <= odata(15 downto 0);
+    led <= ledout;
 
     process(clk)
     begin
         if (clk'event and clk = '1') then
-            counter <= counter + 1;
+            -- only uses upper or lower word16 (todo use a MUX)
+            ledout <= romdata(15 downto 0);
+            --ledout <= romdata(31 downto 16);
+
+            -- synchronise address to avoid DRC warnings Warning The RAMB18E1  which is driven by a register has an active asychronous set or rese ;)
+            --address <= counter(31 downto 26); -- 32-6=26
+            address <= counter(CNTR_BITS-1 downto CNTR_BITS-ADDR_BITS); -- leave highest counter bit for bank selection
         end if;
     end process;
+
+    u_addr_cntr : entity work.counters_1
+    generic map(DWIDTH => CNTR_BITS)
+    port map(
+        C => clk,
+        CLR => reset,
+        Q => counter);
 
     u_rom : entity work.rams_20c
     port map(
         clk  => clk,
         we   => '0',
-        addr => std_logic_vector(counter(32-1 downto 32-6)), -- std_logic_vector(counter(6-1 downto 0)),
-        din  =>  (others => '1'),
-        dout => odata
+        --addr => std_logic_vector(counter(32-1 downto 32-6)) -- NO!
+        addr => address(ADDR_BITS-1 downto 0),
+        din  => (others => '1'),
+        dout => romdata
     );
 
 end Behavioral;

@@ -36,9 +36,10 @@ entity top_tb is
 end top_tb;
 
 architecture Behavioral of top_tb is
+ 
     component top
         port (clk   : in std_logic;
-              --reset : in std_logic;
+              reset : in std_logic;
               --sw    : in std_logic_vector (15 downto 0);
               led   : out std_logic_vector (15 downto 0));
     end component;
@@ -46,7 +47,7 @@ architecture Behavioral of top_tb is
     signal clk   : std_logic := '0'; -- clock must be in known state for sim to start!
     signal reset : std_logic;
      -- initial condition of sw must be in known state!
-    signal sw    : std_logic_vector (15 downto 0) := "0000101001011010"; --  (others => '0');
+    --signal sw    : std_logic_vector (15 downto 0) := "0000101001011010"; --  (others => '0');
     signal led   : std_logic_vector (15 downto 0);
 begin
 
@@ -56,7 +57,7 @@ begin
 
     dut : top
     port map (clk   => clk,
-              --reset => reset,
+              reset => reset,
               --sw    => sw,
               led   => led);
 
