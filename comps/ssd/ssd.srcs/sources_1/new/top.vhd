@@ -32,7 +32,8 @@ use IEEE.NUMERIC_STD.all;
 --use UNISIM.VComponents.all;
 
 entity top is
-    generic (constant SEGBIT : integer := 29);
+    generic (
+             constant SEGBIT   : integer := 29);
     port (
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
@@ -46,23 +47,30 @@ end top;
 
 architecture Behavioral of top is
     signal cntr   : unsigned (31 downto 0);
-    signal segsel : std_logic_vector (3 downto 0);
-    signal segr   : std_logic_vector (7 downto 0);
     signal switches : std_logic_vector (15 downto 0);
+    signal digsel : std_logic_vector (3 downto 0); -- selects digit pattern lookup
+    signal segsel : std_logic_vector (1 downto 0); -- selects 1 of 4 anode drive 
+    signal segr   : std_logic_vector (7 downto 0);
 begin
     switches <= sw;
-    an <= (others => '0');
+    -- see HDL_Coding_Techniques/decoders_2.vhd:-- 1-of-8 decoder (One-Cold
+    an <= "1110" when segsel = "00"
+     else "1101" when segsel = "01"
+     else "1011" when segsel = "10"
+     else "0111";
+
     dp <= '0';
     led <= std_logic_vector (cntr(31 downto 16));
-    seg <= segr(6 downto 0);
+    seg <= segr(6 downto 0); -- drive output pins from segment register
 
     process (clk)
     begin
         if (clk'EVENT and clk = '1') then
             -- infers a registered address
-            segsel <= std_logic_vector(cntr(SEGBIT downto SEGBIT-(4-1)));
+            digsel <= std_logic_vector(cntr(SEGBIT downto SEGBIT-(4-1)));
+            segsel <= std_logic_vector(cntr(20 downto 19)); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
 
-            case segsel is
+            case digsel is
                 when "0000" => segr <= "01000000"; -- "0" 
                 when "0001" => segr <= "01111001"; -- "1"
                 when "0010" => segr <= "00100100"; -- "2"
