@@ -32,8 +32,10 @@ use IEEE.NUMERIC_STD.all;
 --use UNISIM.VComponents.all;
 
 entity top is
-    generic (
-             constant SEGBIT   : integer := 29);
+    generic (--constant RADDRBITS : integer := 6;
+             --constant RDATABITS : integer := 20;
+             constant SEGBIT   : integer := 29   -- sets the upper bit of a 4 bit counter which should be going away?
+             );
     port (
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
@@ -53,6 +55,8 @@ architecture Behavioral of top is
     signal segr   : std_logic_vector (7 downto 0);
 begin
     switches <= sw;
+    led <= switches ; -- std_logic_vector (cntr(31 downto 16));
+
     -- see HDL_Coding_Techniques/decoders_2.vhd:-- 1-of-8 decoder (One-Cold
     an <= "1110" when segsel = "00"
      else "1101" when segsel = "01"
@@ -60,15 +64,25 @@ begin
      else "0111";
 
     dp <= '0';
-    led <= std_logic_vector (cntr(31 downto 16));
     seg <= segr(6 downto 0); -- drive output pins from segment register
 
     process (clk)
+        variable tmp_vector32 : std_logic_vector(31 downto 0);
+        variable tmp_4u       : unsigned(3 downto 0);
     begin
         if (clk'EVENT and clk = '1') then
-            -- infers a registered address
-            digsel <= std_logic_vector(cntr(SEGBIT downto SEGBIT-(4-1)));
-            segsel <= std_logic_vector(cntr(20 downto 19)); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
+
+            tmp_4u       := 16 - cntr(31 downto 28); -- make a down counter to display on one of the 7-segments
+            tmp_vector32 := std_logic_vector(cntr);
+
+            segsel <= tmp_vector32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
+
+            case segsel is
+                when "00" => digsel <= tmp_vector32(31 downto 28);
+                when "01" => digsel <= tmp_vector32(27 downto 24);
+                when "10" => digsel <= tmp_vector32(23 downto 20);
+                when others => digsel <= std_logic_vector(tmp_4u); -- too fast!: tmp_vector32(19 downto 16);
+            end case;
 
             case digsel is
                 when "0000" => segr <= "01000000"; -- "0" 
