@@ -32,7 +32,8 @@ use IEEE.NUMERIC_STD.all;
 --use UNISIM.VComponents.all;
 
 entity top is
-    generic (constant RADDRBITS : integer := 6;
+    generic (constant NUMSEGS : integer := 7;
+             constant RADDRBITS : integer := 6;
              constant RDATABITS : integer := 20
              );
     port (
@@ -67,9 +68,11 @@ begin
      else "0111";
 
     dp <= '0';
-    seg <= segr(6 downto 0); -- drive output pins from segment register
+    seg <= segr(NUMSEGS-1 downto 0); -- drive output pins from segment register   (rdata?)
 
     u_seg_rom : entity work.rams_21c
+--    generic map (ADDRW => 6,
+--                 DATAW => 32)
     port map(
         clk  => clk,
         en   => '1',
@@ -78,22 +81,23 @@ begin
     );
 
     process (clk)
-        variable tmp_vector32 : std_logic_vector(31 downto 0);
-        variable tmp_4u       : unsigned(3 downto 0);
+        variable tmp_v32 : std_logic_vector(31 downto 0);
+        variable tmp_v6  : std_logic_vector(RADDRBITS-1 downto 0);
+        variable tmp_4u  : unsigned(3 downto 0);
     begin
         if (clk'EVENT and clk = '1') then
 
-            tmp_4u       := 16 - cntr(31 downto 28); -- make a down counter to display on one of the 7-segments
-            tmp_vector32 := std_logic_vector(cntr);
+            tmp_4u  := 16 - cntr(31 downto 28); -- make a down counter to display on one of the 7-segments
+            tmp_v32 := std_logic_vector(cntr);
 
-            raddr <= tmp_vector32(31 downto 26);
-            
-            segsel <= tmp_vector32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
+            raddr <= tmp_v32(32-1 downto 32-RADDRBITS);
+
+            segsel <= tmp_v32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
 
             case segsel is
-                when "00" => digsel <= tmp_vector32(31 downto 28);
-                when "01" => digsel <= tmp_vector32(27 downto 24);
-                when "10" => digsel <= tmp_vector32(23 downto 20);
+                when "00" => digsel <= tmp_v32(31 downto 28);
+                when "01" => digsel <= tmp_v32(27 downto 24);
+                when "10" => digsel <= tmp_v32(23 downto 20);
                 when others => digsel <= std_logic_vector(tmp_4u); -- too fast!: tmp_vector32(19 downto 16)
             end case;
 
