@@ -91,12 +91,10 @@ begin
         o => digsel
     );
 
-    process (clk)
+    process (digsel)
     begin
-        if (clk'EVENT and clk = '1') then
-            raddr <= (others => '0'); -- 0 the bits first since only [3:0] are set
-            raddr(3 downto 0) <= digsel;
-        end if;
+        raddr <= (others => '0'); -- 0 the bits first since only [3:0] are set
+        raddr(3 downto 0) <= digsel;
     end process;
     
     u_counter_1 : entity work.counters_1
