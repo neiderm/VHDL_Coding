@@ -52,7 +52,6 @@ architecture Behavioral of top is
     signal switches : std_logic_vector (15 downto 0);
     signal digsel : std_logic_vector (3 downto 0); -- selects digit pattern lookup
     signal segsel : std_logic_vector (1 downto 0); -- selects 1 of 4 anode drive 
-    signal segr   : std_logic_vector (7 downto 0);
 
     signal raddr   : std_logic_vector (RADDRBITS-1 downto 0);
     signal rdata   : std_logic_vector (RDATABITS-1 downto 0);
@@ -68,7 +67,8 @@ begin
      else "0111";
 
     dp <= '0';
-    seg <= segr(NUMSEGS-1 downto 0); -- drive output pins from segment register   (rdata?)
+
+    seg <= rdata(NUMSEGS-1 downto 0); -- drive output pins from ROM data
 
     u_seg_rom : entity work.rams_21c
 --    generic map (ADDRW => 6,
@@ -76,7 +76,7 @@ begin
     port map(
         clk  => clk,
         en   => '1',
-        addr => raddr(RADDRBITS-1 downto 0),
+        addr => raddr,
         data => rdata
     );
 
@@ -90,35 +90,37 @@ begin
             tmp_4u  := 16 - cntr(31 downto 28); -- make a down counter to display on one of the 7-segments
             tmp_v32 := std_logic_vector(cntr);
 
-            raddr <= tmp_v32(32-1 downto 32-RADDRBITS);
-
             segsel <= tmp_v32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
 
             case segsel is
                 when "00" => digsel <= tmp_v32(31 downto 28);
                 when "01" => digsel <= tmp_v32(27 downto 24);
                 when "10" => digsel <= tmp_v32(23 downto 20);
-                when others => digsel <= std_logic_vector(tmp_4u); -- too fast!: tmp_vector32(19 downto 16)
+                when others => digsel <= std_logic_vector(tmp_4u); -- reverse count of highest digit
             end case;
 
-            case digsel is
-                when "0000" => segr <= "01000000"; -- "0" 
-                when "0001" => segr <= "01111001"; -- "1"
-                when "0010" => segr <= "00100100"; -- "2"
-                when "0011" => segr <= "00110000"; -- "3"
-                when "0100" => segr <= "00011001"; -- "4"
-                when "0101" => segr <= "00010010"; -- "5"
-                when "0110" => segr <= "00000010"; -- "6"
-                when "0111" => segr <= "01111000"; -- "7"
-                when "1000" => segr <= "00000000"; -- "8" 
-                when "1001" => segr <= "00010000"; -- "9"
-                when "1010" => segr <= "00001000"; -- "A"
-                when "1011" => segr <= "00000011"; -- "B"
-                when "1100" => segr <= "01000110"; -- "C"
-                when "1101" => segr <= "00100001"; -- "D"
-                when "1110" => segr <= "00000110"; -- "E"
-                when others => segr <= "00001110"; -- "F" (1111) 
-            end case;
+            raddr <= (others => '0'); -- 0 the bits first since only [3:0] are set
+--            raddr(3 downto 0) <= tmp_v32(31-1 downto 31-4); -- tmp_v32(32-1 downto 32-RADDRBITS);
+            raddr(3 downto 0) <= digsel;
+
+--            case digsel is
+--                when "0000" => segr <= "01000000"; -- "0" 
+--                when "0001" => segr <= "01111001"; -- "1"
+--                when "0010" => segr <= "00100100"; -- "2"
+--                when "0011" => segr <= "00110000"; -- "3"
+--                when "0100" => segr <= "00011001"; -- "4"
+--                when "0101" => segr <= "00010010"; -- "5"
+--                when "0110" => segr <= "00000010"; -- "6"
+--                when "0111" => segr <= "01111000"; -- "7"
+--                when "1000" => segr <= "00000000"; -- "8" 
+--                when "1001" => segr <= "00010000"; -- "9"
+--                when "1010" => segr <= "00001000"; -- "A"
+--                when "1011" => segr <= "00000011"; -- "B"
+--                when "1100" => segr <= "01000110"; -- "C"
+--                when "1101" => segr <= "00100001"; -- "D"
+--                when "1110" => segr <= "00000110"; -- "E"
+--                when others => segr <= "00001110"; -- "F" (1111) 
+--            end case;
 
         end if;
     end process;
