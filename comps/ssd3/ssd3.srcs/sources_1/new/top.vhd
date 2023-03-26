@@ -60,11 +60,11 @@ begin
     --led <= switches ; -- std_logic_vector (cntr(31 downto 16));
     led <= rdata(15 downto 0);
 
-    -- see HDL_Coding_Techniques/decoders_2.vhd:-- 1-of-8 decoder (One-Cold
-    an <= "1110" when segsel = "00"
-     else "1101" when segsel = "01"
-     else "1011" when segsel = "10"
-     else "0111";
+    u_seg_decode : entity work.decoders_2
+    port map (
+        sel => segsel,
+        res => an
+    );
 
     dp <= '0';
 
@@ -101,13 +101,6 @@ begin
             tmp_v32 := std_logic_vector(cntr);
 
             segsel <= tmp_v32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
-
---            case segsel is
---                when "00" => digsel <= tmp_v32(31 downto 28);
---                when "01" => digsel <= tmp_v32(27 downto 24);
---                when "10" => digsel <= tmp_v32(23 downto 20);
---                when others => digsel <= std_logic_vector(tmp_4u); -- too fast!: tmp_vector32(19 downto 16)
---            end case;
 
             raddr <= (others => '0'); -- 0 the bits first since only [3:0] are set
             raddr(3 downto 0) <= digsel;
