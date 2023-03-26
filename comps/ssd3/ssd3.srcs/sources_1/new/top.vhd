@@ -48,21 +48,21 @@ entity top is
 end top;
 
 architecture Behavioral of top is
-    signal cntr   : unsigned (31 downto 0);
     signal switches : std_logic_vector (15 downto 0);
-    signal digsel : std_logic_vector (3 downto 0); -- selects digit pattern lookup
-    signal segsel : std_logic_vector (1 downto 0); -- selects 1 of 4 anode drive 
-
+    signal digsel  : std_logic_vector (3 downto 0); -- selects digit pattern lookup
     signal raddr   : std_logic_vector (RADDRBITS-1 downto 0);
     signal rdata   : std_logic_vector (RDATABITS-1 downto 0);
+
+    signal cntr    : std_logic_vector (31 downto 0);
 begin
     switches <= sw;
     --led <= switches ; -- std_logic_vector (cntr(31 downto 16));
     led <= rdata(15 downto 0);
 
+     -- segment selection using a pair of counter bits with close enough timing for flicker-free display
     u_seg_decode : entity work.decoders_2
     port map (
-        sel => segsel,
+        sel => cntr(20 downto 19), -- segsel,
         res => an
     );
 
@@ -80,43 +80,31 @@ begin
         data => rdata
     );
 
+     -- synchronize displayed information with the segment being driven
     u_seg_mux : entity work.multiplexers_4
     port map(
-        s => segsel,
-        a => sw(15 downto 12),
-        b => sw(11 downto 8),
+        s => cntr(20 downto 19),
+        a => cntr(31 downto 28),
+        b => cntr(27 downto 24),
         c => sw(7 downto 4),
         d => sw(3 downto 0),
         o => digsel
     );
 
     process (clk)
-        variable tmp_v32 : std_logic_vector(31 downto 0);
-        variable tmp_v6  : std_logic_vector(RADDRBITS-1 downto 0);
-        variable tmp_4u  : unsigned(3 downto 0);
     begin
         if (clk'EVENT and clk = '1') then
-
-            tmp_4u  := 16 - cntr(31 downto 28); -- make a down counter to display on one of the 7-segments
-            tmp_v32 := std_logic_vector(cntr);
-
-            segsel <= tmp_v32(20 downto 19); -- 2-bits taken to make fast enough multiplex rate across the 4 segments
-
             raddr <= (others => '0'); -- 0 the bits first since only [3:0] are set
             raddr(3 downto 0) <= digsel;
-
         end if;
     end process;
     
-    process (clk)
-    begin
-        if (clk'EVENT and clk = '1') then
-            if (reset = '1') then
-                cntr <= (others => '0');
-            else
-                cntr <= cntr + 1;
-            end if;
-        end if;
-    end process;
+    u_counter_1 : entity work.counters_1
+    generic map (DATAW => 32)
+    port map(
+        C   => clk,
+        Q   => cntr,
+        CLR => reset
+    );
 
 end Behavioral;
