@@ -69,7 +69,7 @@ begin
 
     u_ssd4 : entity work.ssd4
     port map(
-        dnum => cntr,
+        dnum => sw, -- cntr,
         clk => clk,
         reset => reset,
         seg => seg,
