@@ -39,25 +39,32 @@ entity top is
     port (
         clk : in STD_LOGIC;
         reset : in STD_LOGIC;
-        sw : in STD_LOGIC_VECTOR (15 downto 0);
+        btn : in STD_LOGIC_VECTOR (3 downto 0);
+        sw  : in STD_LOGIC_VECTOR (15 downto 0);
         led : out STD_LOGIC_VECTOR (15 downto 0);
-        an : out STD_LOGIC_VECTOR (3 downto 0);
+        an  : out STD_LOGIC_VECTOR (3 downto 0);
         seg : out STD_LOGIC_VECTOR (6 downto 0);
-        dp : out STD_LOGIC
+        dp  : out STD_LOGIC
     );
 end top;
 
 architecture Behavioral of top is
     signal switches : std_logic_vector (15 downto 0);
     signal cntr    : std_logic_vector (31 downto 0);
+    signal reset_l : std_logic;
 begin
-    -- From Reset, free-run counter until any button pushed
-    -- Buttons: +1 -1 <<1 >>1
 
+    led(15 downto 4) <= cntr(31 downto 20);
     switches <= sw;
+    reset_l <= not reset;
 
-    led <= switches ; -- std_logic_vector (cntr(31 downto 16));
-    --led <= rdata(15 downto 0);
+    u_button_inp : entity  work.accumulators_1
+    port map(
+        rst => reset_l,
+        clk => clk,
+        D => btn,
+        Q => led(3 downto 0)
+    );
 
     u_counter_1 : entity work.counters_1
     generic map (DATAW => 32)
@@ -69,7 +76,7 @@ begin
 
     u_ssd4 : entity work.ssd4
     port map(
-        dnum => sw, -- cntr,
+        dnum => switches,
         clk => clk,
         reset => reset,
         seg => seg,
