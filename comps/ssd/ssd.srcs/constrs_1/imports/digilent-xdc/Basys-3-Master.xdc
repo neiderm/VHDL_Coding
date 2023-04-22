@@ -158,3 +158,10 @@ set_property CFGBVS VCCO [current_design]
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
 set_property CONFIG_MODE SPIx4 [current_design]
+
+
+set_false_path -from [get_ports reset] -to [get_clocks sys_clk_pin]
+set_false_path -from [get_clocks sys_clk_pin] -to [list [get_clocks sys_clk_pin] [get_ports *led*]]
+
+set_false_path -from [get_clocks sys_clk_pin] -to [get_ports *an*]
+set_false_path -from [get_clocks sys_clk_pin] -to [list [get_ports *an*] [get_ports *seg*]]
