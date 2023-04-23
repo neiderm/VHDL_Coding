@@ -158,8 +158,8 @@ set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 set_property BITSTREAM.CONFIG.CONFIGRATE 33 [current_design]
 set_property CONFIG_MODE SPIx4 [current_design]
 
-#create_generated_clock -name vga_clk -source [get_ports clk] -divide_by 4 [get_pins {u_clk_div/tmp_reg[1]/Q}]  # you set name
+create_generated_clock -name vga_clk -source [get_ports clk] -divide_by 4 [get_pins {u_clk_div/tmp_reg[1]/Q}]
 
-#create_generated_clock -name {u_clk_div/Q[0]} -source [get_ports clk] -divide_by 4 [get_pins {u_clk_div/tmp_reg[1]/Q}]  # you don't set name
+set_false_path -from [get_ports reset] -to [get_clocks sys_clk_pin]
 
-create_generated_clock -name vga_clk -source [get_ports clk] -divide_by 4 [get_pins {u_clk_div/tmp_reg[1]/Q}] # Generated Clock Name 
+set_false_path -from [get_clocks sys_clk_pin] -to [get_ports led*]
