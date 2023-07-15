@@ -49,23 +49,21 @@ architecture Behavioral of top is
     signal reset_l : std_logic;
     signal clocks2 : std_logic_vector(3 downto 0);
     signal clk_vga : std_logic;
-    signal leds    : std_logic_vector(15 downto 0);
-    signal switches : std_logic_vector(15 downto 0);
     signal video_on : std_logic;
     signal pixel_x  : INTEGER;
     signal pixel_y  : INTEGER;
-    signal rgbR   : std_logic_vector(7 downto 0);
-    signal rgbG   : std_logic_vector(7 downto 0);
-    signal rgbB   : std_logic_vector(7 downto 0);
+    signal rgb24    : std_logic_vector(24 downto 0);
 begin
+   led <= sw;
 
-   led <= leds;
-   switches <= sw;
+    --------------------------------------------------
+    -- invert the active high reset to active low 
+    --------------------------------------------------
+    reset_l <= not reset;
 
-    --leds <= (3 downto 0 => counter, others => '0'); -- vhdl 2008
-    leds(3 downto 0) <= clocks2;
-    leds(15 downto 4) <= (others => '0'); 
-
+    --------------------------------------------------
+    -- clocks
+    --------------------------------------------------
     u_clk_div: entity work.counters_1
     port map(
         C   => clk,
@@ -74,11 +72,6 @@ begin
     );
 
     clk_vga <= clocks2(1);
-
-    --------------------------------------------------
-    -- invert the active high reset to active low 
-    --------------------------------------------------
-    reset_l <= not reset;
 
     --------------------------------------------------
     -- video subsystem
@@ -107,24 +100,24 @@ begin
             n_sync => open
         );
 
-    -- set RGB test pattern from the image ROM at a specific location on the screen
+    -- static RGB test pattern from discrete logic
     u_bmp_img_gen : entity work.hw_image_generator
         GENERIC map (
             pixels_y => 240,  --row that first color will persist until
             pixels_x => 320)  --column that first color will persist until
         port map(
-            disp_ena => '1', -- video_on ... tbd, enable is applied to final mux output 
+            disp_ena => '1', -- video_on ... or not, enable is applied to final output 
             row      => pixel_y,
             column   => pixel_x,
-            red      => rgbR,
-            green    => rgbG,
-            blue     => rgbB
+            red      => rgb24(23 downto 16),
+            green    => rgb24(15 downto 8),
+            blue     => rgb24(7 downto 0)
             );
 
     -- rgb register gated onto VGA signals only during video on time
-    vgaRed    <= rgbR(7 downto 4) when video_on = '1' else (others => '0');
-    vgaGreen  <= rgbG(7 downto 4) when video_on = '1' else (others => '0');
-    vgaBlue   <= rgbB(7 downto 4) when video_on = '1' else (others => '0');
+    vgaRed    <= rgb24(23 downto 20) when video_on = '1' else (others => '0');
+    vgaGreen  <= rgb24(15 downto 12) when video_on = '1' else (others => '0');
+    vgaBlue   <= rgb24(7 downto 4) when video_on = '1' else (others => '0');
 
 -- ha teaching moment don't do this!
 --    vgaRed   <= rgbR(7 downto 4);
