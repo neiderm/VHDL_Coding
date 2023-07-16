@@ -59,62 +59,10 @@ architecture Behavioral of top is
     signal rgb_mI3  : std_logic_vector(11 downto 0); -- rgb mux in 3
     signal rgb_mOut : std_logic_vector(11 downto 0); -- rgb mux out
     signal mux_sel  : std_logic_vector(1 downto 0); -- rgb mux select vector
-    signal data24   : std_logic_vector(19 downto 0); -- convert to 12-bit data
+    signal data20   : std_logic_vector(19 downto 0); -- convert to 12-bit data
     signal pix_addr : unsigned(6 downto 0); -- used to address the ROM
 begin
     led <= sw;
-
-    -------------------------------------------------------
-    -- static RGB test pattern from arbitrary data from ROM
-    -------------------------------------------------------
-    pix_addr <= to_unsigned(pixel_y, pix_addr'length);
-    rgb_mI2 <= data24(19 downto 8); -- connect arbitrary set of signals to RGB output
-
-    bmp_img_gen : entity work.roms_signal
-        port map(
-            clk     => clk_vga, -- clk?
-            en      => '1', -- video_on 
-            addr    => std_logic_vector(pix_addr),
-            data    => data24);
-
-    --------------------------------------------------
-    -- video multplexer
-    --------------------------------------------------
-    u_mux2 : entity work.Mux(behv2)
-        generic map(
-            RGB_SIGW => 12 - 1)
-        port map(
-            I0 => rgb_mI0, 
-            I1 => rgb_mI1,
-            I2 => rgb_mI2, 
-            I3 => rgb_mI3, -- (others => '0'), 
-            S => mux_sel,
-            O => rgb_mOut
-        );
-
-    --------------------------------------------------
-    -- video multplexer
-    --------------------------------------------------
-    u_mux1 : entity work.Mux(behv1)
-        port map(
-            I0 => (others => '0'), 
-            I1 => (others => '0'),
-            I2 => (others => '0'), 
-            I3 => (others => '0'),
-            S => (others => '0'),
-            O => open
-        );
-
-    rgb_mI0 <= sw(11 downto 0);
-    rgb_mI1(11 downto 8) <= rgb24(23 downto 20);
-    rgb_mI1(7 downto 4) <= rgb24(15 downto 12);
-    rgb_mI1(3 downto 0) <= rgb24(7 downto 4);
-    mux_sel <= sw(15 downto 14);
-
-    vgaRed    <= rgb_mOut(11 downto 8) when video_on = '1' else (others => '0');
-    vgaGreen  <= rgb_mOut(7 downto 4) when video_on = '1' else (others => '0');
-    vgaBlue   <= rgb_mOut(3 downto 0) when video_on = '1' else (others => '0');
-
     --------------------------------------------------
     -- invert the active high reset to active low 
     --------------------------------------------------
@@ -162,7 +110,7 @@ begin
     --------------------------------------------------
     -- static RGB test pattern from discrete logic
     --------------------------------------------------
-    u_bmp_img_gen : entity work.hw_image_generator
+    u_hw_img_gen : entity work.hw_image_generator
         GENERIC map (
             pixels_y => 240,  --row that first color will persist until
             pixels_x => 320)  --column that first color will persist until
@@ -175,10 +123,73 @@ begin
             blue     => rgb24(7 downto 0)
             );
 
+    --------------------------------------------------------------
+    -- static RGB test pattern connected directly to data from ROM
+    --------------------------------------------------------------
+    -- address the rom by simply connecting the pixel_y, so the each row of 
+    -- the screen gets colored whatever RGB value comes out of the data
+    pix_addr <= to_unsigned(pixel_y, pix_addr'length);
+    -- connect arbitrary subset of signals from data bus to RGB output
+    rgb_mI2 <= data20(19 downto 8);
 
--- ha teaching moment don't do this!
---    vgaRed   <= rgbR(7 downto 4);
---    vgaGreen <= rgbG(7 downto 4);
---    vgaBlue  <= rgbB(7 downto 4);
+    u_roms_signal : entity work.roms_signal
+        port map(
+            clk     => clk_vga, -- clk?
+            en      => '1', -- video_on 
+            addr    => std_logic_vector(pix_addr),
+            data    => data20);
+
+    -----------------------------------------------------------
+    -- static RGB test pattern from the image ROM at a specific 
+    -- screen location with a specified height and width
+    -----------------------------------------------------------
+    u_rom_img_gen : entity work.rom_img_gen
+        port map(
+            clk_in   => clk_vga,
+            disp_ena => '1', -- video_on ... tbd, enable is applied to final mux output 
+            row_r    => pixel_y,
+            col_r    => pixel_x,
+            red      => rgb_mI3(11 downto 8),
+            green    => rgb_mI3(7 downto 4),
+            blue     => rgb_mI3(3 downto 0)
+            );
+
+    --------------------------------------------------
+    -- video multplexer
+    --------------------------------------------------
+    u_mux2 : entity work.Mux(behv2)
+        generic map(
+            RGB_SIGW => 12 - 1)
+        port map(
+            I0 => rgb_mI0, 
+            I1 => rgb_mI1,
+            I2 => rgb_mI2, 
+            I3 => rgb_mI3,
+            S => mux_sel,
+            O => rgb_mOut
+        );
+
+    --------------------------------------------------
+    -- video multplexer and output
+    --------------------------------------------------
+    u_mux1 : entity work.Mux(behv1)
+        port map(
+            I0 => (others => '0'), 
+            I1 => (others => '0'),
+            I2 => (others => '0'), 
+            I3 => (others => '0'),
+            S => (others => '0'),
+            O => open
+        );
+
+    rgb_mI0 <= sw(11 downto 0);
+    rgb_mI1(11 downto 8) <= rgb24(23 downto 20);
+    rgb_mI1(7 downto 4) <= rgb24(15 downto 12);
+    rgb_mI1(3 downto 0) <= rgb24(7 downto 4);
+    mux_sel <= sw(15 downto 14);
+
+    vgaRed    <= rgb_mOut(11 downto 8) when video_on = '1' else (others => '0');
+    vgaGreen  <= rgb_mOut(7 downto 4) when video_on = '1' else (others => '0');
+    vgaBlue   <= rgb_mOut(3 downto 0) when video_on = '1' else (others => '0');
 
 end Behavioral;
