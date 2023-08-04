@@ -3,7 +3,7 @@
 --
 -- Download: ftp://ftp.xilinx.com/pub/documentation/misc/xstug_examples.zip
 -- File: HDL_Coding_Techniques/rams/rams_2oc.vhd
--- Reference: https://vhdlwhiz.com/read-bmp-file/
+-- Ref: https://vhdlwhiz.com/read-bmp-file/
 --
 library ieee;
 use ieee.std_logic_1164.all;
@@ -49,7 +49,7 @@ architecture syn of bmp_loader is
             hread (RamFileLine, header(i)); -- requires VHDL 2008
         end loop;
         file_close(bmp_file);
-        -- extract image dimensions 
+        -- extract image dimensions
         bmp_dims.width := to_integer(unsigned(header(18))) + 
                           to_integer(unsigned(header(19))) * 2 ** 8 + 
                           to_integer(unsigned(header(20))) * 2 ** 16 + 
@@ -82,7 +82,7 @@ architecture syn of bmp_loader is
     impure function InitRamFromFile (RamFileName : in string) return bmp_type is
         file     bmp_file     : text;
         variable RamFileLine  : line;
-        variable pix_data_buf : bmp_img_dat_type; -- temporary byte buffer to read in bmp image data
+        variable pix_data_buf : bmp_img_dat_type; -- temp byte buffer to read in bmp image data
         variable read_index   : integer := 0;
         variable bmp_data     : bmp_type;  -- object returned from function
     begin

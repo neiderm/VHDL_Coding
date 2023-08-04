@@ -52,13 +52,17 @@ architecture Behavioral of top is
     signal video_on : std_logic;
     signal pixel_x  : INTEGER;
     signal pixel_y  : INTEGER;
+
     signal rgb24    : std_logic_vector(24 downto 0); -- convert to 12-bit data
+
     signal rgb_mI0  : std_logic_vector(11 downto 0); -- rgb mux in 0
     signal rgb_mI1  : std_logic_vector(11 downto 0); -- rgb mux in 1
     signal rgb_mI2  : std_logic_vector(11 downto 0); -- rgb mux in 2
     signal rgb_mI3  : std_logic_vector(11 downto 0); -- rgb mux in 3
+
     signal rgb_mOut : std_logic_vector(11 downto 0); -- rgb mux out
-    signal mux_sel  : std_logic_vector(1 downto 0); -- rgb mux select vector
+    signal mux_sel  : std_logic_vector(1 downto 0);  -- rgb mux select vector
+
     signal data20   : std_logic_vector(19 downto 0); -- convert to 12-bit data
     signal pix_addr : unsigned(6 downto 0); -- used to address the ROM
 begin
@@ -129,6 +133,7 @@ begin
     -- address the rom by simply connecting the pixel_y, so the each row of 
     -- the screen gets colored whatever RGB value comes out of the data
     pix_addr <= to_unsigned(pixel_y, pix_addr'length);
+
     -- connect arbitrary subset of signals from data bus to RGB output
     rgb_mI2 <= data20(19 downto 8);
 
@@ -154,10 +159,41 @@ begin
             blue     => rgb_mI3(3 downto 0)
             );
 
+    -----------------------------------------------------------
+    -- set screen fill color from switches
+    -----------------------------------------------------------
+    --rgb_mI0 <= sw(11 downto 0);
+
+--    -- set RGB image from the bitmap image ROM
+--    u_bmp_loader: entity work.bmp_loader
+--        generic map(
+--            FileName => "rgb.bmp.dat"
+--        )
+--        port map (
+--            clk     => clk_vga,
+--            row     => pixel_y,
+--            col     => pixel_x,
+--            dout    => rgb_mI0,
+--            imgRow0 => 120,
+--            imgCol0 => 240 -- image_y
+--        );
+
+    -- set RGB image from the bitmap image ROM
+    u_bmp_img_gen: entity work.bmp_img_gen
+        generic map(
+            FileName => "rgb.bmp.dat"
+        )
+        port map (
+            clk_in  => clk_vga,
+            row_in  => pixel_y,
+            col_in  => pixel_x,
+            rgb_out => rgb_mI0
+        );
+
     --------------------------------------------------
-    -- video multplexer
+    -- video multplexer (note comp has 2 arches)
     --------------------------------------------------
-    u_mux2 : entity work.Mux(behv2)
+    u_mux0 : entity work.Mux(behv2)
         generic map(
             RGB_SIGW => 12 - 1)
         port map(
@@ -182,7 +218,6 @@ begin
             O => open
         );
 
-    rgb_mI0 <= sw(11 downto 0);
     rgb_mI1(11 downto 8) <= rgb24(23 downto 20);
     rgb_mI1(7 downto 4) <= rgb24(15 downto 12);
     rgb_mI1(3 downto 0) <= rgb24(7 downto 4);
