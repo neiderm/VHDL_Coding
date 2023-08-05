@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Red~Bote
 -- 
 -- Create Date: 08/03/2023 05:17:36 PM
 -- Design Name: 
@@ -24,10 +24,11 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
 
-
 entity bmp_img_gen is
     generic (
         FileName : string := "rgb.bmp.dat"; 
+        imgY     : integer := 0;
+        imgX     : integer := 0;
         VGA_BITS : integer := 12  -- VGA bus width
     );
     port (
@@ -39,37 +40,18 @@ entity bmp_img_gen is
 end bmp_img_gen;
 
 architecture Behavioral of bmp_img_gen is
-
-    constant imgRow0  : integer := 120;
-    constant imgCol0  : integer := 240;
-    constant imgW     : integer := 24; -- bmp_dat.dimensions.width;
-    constant imgH     : integer := 19; -- bmp_dat.dimensions.height;
-    signal   addr     : UNSIGNED(31 downto 0); -- initializing integer causes a synthesize warning on BRAM 
-
 begin
     u_bmp_loader: entity work.bmp_loader
         generic map(
-            FileName => "rgb.bmp.dat"
+            imgRow0 => imgY,
+            imgCol0 => imgX,
+            FileName => FileName
         )
         port map (
             clk     => clk_in,
-            addr_in => addr,
+            row_in  => row_in,
+            col_in  => col_in,
             dout    => rgb_out
         );
 
-    process (clk_in)
-    begin
-        if (clk_in'EVENT and clk_in = '1') then
-            -- todo investigate using integer multiplication to get pix location directly instead of the free-running address counter
-            if (row_in < imgRow0) then
-                addr <= to_unsigned(0, addr'length);
-            end if;
-                
-            if (row_in >= imgRow0) and (row_in < (imgRow0 + imgH)) and
-               (col_in >= imgCol0) and (col_in < (imgCol0 + imgW))
-            then
-                addr <= addr + 1;
-            end if;
-        end if;
-    end process;
 end Behavioral;

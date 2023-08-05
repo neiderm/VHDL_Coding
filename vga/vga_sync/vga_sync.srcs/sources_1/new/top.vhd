@@ -181,6 +181,8 @@ begin
     -- set RGB image from the bitmap image ROM
     u_bmp_img_gen: entity work.bmp_img_gen
         generic map(
+            imgX => 320,
+            imgY => 240,
             FileName => "rgb.bmp.dat"
         )
         port map (
