@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="t80_pack" />
+            <top_module name="top_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="184523fs"></ZoomEndTime>
+      <Cursor1Time time="85000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="162"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="9" />
+   <wave_markers>
+      <marker label="" time="10965000" />
+   </wave_markers>
+   <wvobject type="logic" fp_name="/top_tb/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_cpu/CLK_n">
+      <obj_property name="ElementShortName">CLK_n</obj_property>
+      <obj_property name="ObjectShortName">CLK_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/u_cpu/A">
+      <obj_property name="ElementShortName">A[15:0]</obj_property>
+      <obj_property name="ObjectShortName">A[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_cpu/MREQ_n">
+      <obj_property name="ElementShortName">MREQ_n</obj_property>
+      <obj_property name="ObjectShortName">MREQ_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_cpu/RD_n">
+      <obj_property name="ElementShortName">RD_n</obj_property>
+      <obj_property name="ObjectShortName">RD_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_cpu/M1_n">
+      <obj_property name="ElementShortName">M1_n</obj_property>
+      <obj_property name="ObjectShortName">M1_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/u_cpu/DI">
+      <obj_property name="ElementShortName">DI[7:0]</obj_property>
+      <obj_property name="ObjectShortName">DI[7:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_cpu/RFSH_n">
+      <obj_property name="ElementShortName">RFSH_n</obj_property>
+      <obj_property name="ObjectShortName">RFSH_n</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/cpu_addr">
+      <obj_property name="ElementShortName">cpu_addr[15:0]</obj_property>
+      <obj_property name="ObjectShortName">cpu_addr[15:0]</obj_property>
+   </wvobject>
+</wave_config>
