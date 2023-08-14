@@ -43,9 +43,10 @@ architecture Behavioral of top is
     signal cpu_addr       : std_logic_vector(15 downto 0);
     signal cpu_data_out   : std_logic_vector(7 downto 0);
     signal cpu_data_in    : std_logic_vector(7 downto 0);
+    signal ram_data_in    : std_logic_vector(15 downto 0); --rams08 16-bit databus
 
     signal prog_rom_data  : std_logic_vector(7 downto 0);
-    signal rams_data_out  : std_logic_vector(7 downto 0);
+    signal rams_data_out  : std_logic_vector(15 downto 0); --rams08 16-bit databus
 
     signal work_ram_cs_l  : std_logic;
     signal prog_rom_cs_l  : std_logic;
@@ -103,11 +104,12 @@ begin
     --------------------------------------------------
     --VHDL2008 to embed this assigment directly to we port below 
     --work_rams_we <=  not (mem_wr_l or work_ram_cs_l);
+    ram_data_in(7 downto 0) <= cpu_data_out;
 
     u_rams : entity work.rams_08
       port map (
-        a    => cpu_addr(9 downto 0),
-        di   => cpu_data_out,
+        a    => cpu_addr(5 downto 0),
+        di   => ram_data_in,
         do   => rams_data_out,
         we   => work_rams_we, -- write enable, active high
         en   => '1',          -- chip enable, active high
@@ -133,7 +135,7 @@ begin
     -- cpu data in mux (bus isolation)
     cpu_data_in  <=
         prog_rom_data  when prog_rom_cs_l = '0' else
-        rams_data_out  when work_ram_cs_l = '0' else
+        rams_data_out(7 downto 0)  when work_ram_cs_l = '0' else
         x"FF"; -- should never be read by CPU?
 
 end Behavioral;
