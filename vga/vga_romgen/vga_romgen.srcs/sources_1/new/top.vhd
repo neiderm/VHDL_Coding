@@ -51,19 +51,19 @@ architecture Behavioral of top is
     signal pixel_x  : INTEGER;
     signal pixel_y  : INTEGER;
     signal rgb24    : STD_LOGIC_VECTOR(24 downto 0); -- convert to 12-bit bus
+    signal rgb16    : STD_LOGIC_VECTOR(15 downto 0);
     signal rgb12    : STD_LOGIC_VECTOR(11 downto 0);
     signal rgbS0    : STD_LOGIC_VECTOR(11 downto 0);
     signal rgbS1    : STD_LOGIC_VECTOR(11 downto 0);
+    signal rgbS2    : STD_LOGIC_VECTOR(11 downto 0);
+    signal rgbS3    : STD_LOGIC_VECTOR(11 downto 0);
+    signal img_addr : STD_LOGIC_VECTOR(8 downto 0);
     signal mux_sel  : STD_LOGIC_VECTOR(1 downto 0);
 
 begin
     --------------------------------------------------
     -- drive external pins
     --------------------------------------------------
---    vgaRed    <= rgb24(23 downto 20) when video_on = '1' else (others => '0');
---    vgaGreen  <= rgb24(15 downto 12) when video_on = '1' else (others => '0');
---    vgaBlue   <= rgb24( 7 downto 4)  when video_on = '1' else (others => '0');
-
     vgaRed    <= rgb12(11 downto 8) when video_on = '1' else (others => '0');
     vgaGreen  <= rgb12(7 downto 4) when video_on = '1' else (others => '0');
     vgaBlue   <= rgb12(3 downto 0) when video_on = '1' else (others => '0');
@@ -99,8 +99,8 @@ begin
         port map(
             I0 => rgbS0, 
             I1 => rgbS1,
-            I2 => (others => '0'), 
-            I3 => (others => '0'),
+            I2 => rgbS2, 
+            I3 => rgbS3,
             S => mux_sel,
             O => rgb12
         );
@@ -146,6 +146,25 @@ begin
         );
 
     --------------------------------------------------
+    -- bmp image from generate rom (see vga_sync/bmp_img_gen)
+    --   hex2rom -b  a.bin  prog_rom 6l8a # array
+    --   hex2rom -b  a.bin  prog_rom 6l8s # synchronized
+    --   hex2rom -b 555.bmp img_rom 9l16s # saved from GIMP as 16-bit (555) RGB
+    --------------------------------------------------
+    rgbS2(11 downto 8) <= rgb16(14 downto 11);
+    rgbS2( 7 downto 4) <= rgb16(9 downto 6);
+    rgbS2( 3 downto 0) <= rgb16(4 downto 1);
+
+    img_addr(3 downto 0) <= clk_cntr;
+
+    u_img_rom : entity work.img_rom
+      port map (
+        Clk  => clk_vga,
+        A    => img_addr,
+        D    => rgb16
+        );
+
+    --------------------------------------------------
     -- static RGB test pattern from discrete logic
     --------------------------------------------------
 
@@ -171,5 +190,20 @@ begin
     -----------------------------------------------------------
     rgbS1 <= sw(11 downto 0);
 
+
+    -----------------------------------------------------------
+    -- static RGB test pattern from the image ROM at a specific 
+    -- screen location with a specified height and width
+    -----------------------------------------------------------
+    u_rom_img_gen : entity work.pix_address
+        port map(
+            clk_in   => clk_vga,
+            disp_ena => '1', -- video_on ... tbd, enable is applied to final mux output 
+            row_r    => pixel_y,
+            col_r    => pixel_x,
+            red      => rgbS3(11 downto 8), ------------
+            green    => rgbS3(7 downto 4), ------------
+            blue     => rgbS3(3 downto 0) ----------------
+            );
 
 end Behavioral;
