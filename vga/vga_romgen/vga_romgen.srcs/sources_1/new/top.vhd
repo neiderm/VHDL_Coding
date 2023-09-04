@@ -199,8 +199,8 @@ begin
         port map(
             clk_in   => clk_vga,
             disp_ena => '1', -- video_on ... tbd, enable is applied to final mux output 
-            row_r    => pixel_y,
-            col_r    => pixel_x,
+            row_in   => pixel_y,
+            col_in   => pixel_x,
             red      => rgbS3(11 downto 8), ------------
             green    => rgbS3(7 downto 4), ------------
             blue     => rgbS3(3 downto 0) ----------------
