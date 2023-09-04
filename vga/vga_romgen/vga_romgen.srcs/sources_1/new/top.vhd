@@ -157,12 +157,12 @@ begin
 
     img_addr(3 downto 0) <= clk_cntr;
 
-    u_img_rom : entity work.img_rom
-      port map (
-        Clk  => clk_vga,
-        A    => img_addr,
-        D    => rgb16
-        );
+--    u_img_rom : entity work.img_rom
+--      port map (
+--        Clk  => clk_vga,
+--        A    => img_addr,
+--        D    => rgb16
+--        );
 
     --------------------------------------------------
     -- static RGB test pattern from discrete logic

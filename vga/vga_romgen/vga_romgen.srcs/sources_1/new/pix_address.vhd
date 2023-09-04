@@ -74,7 +74,7 @@ begin
 
     --------------------------------------------------
     pix_addr <= to_unsigned(
-        0 +   --BMP_HDR_SZ
+        BMP_HDR_SZ +   --BMP_HDR_SZ
         (
             (row_in - imgRow0) * imgW
              + (col_in - imgCol0)
