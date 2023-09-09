@@ -39,9 +39,12 @@ ARCHITECTURE Behavioral OF top_tb IS
     COMPONENT top
         PORT (
             clk : IN std_logic;
-            reset : IN std_logic;
-            sw : IN std_logic_vector (15 DOWNTO 0);
-            led : OUT std_logic_vector (15 DOWNTO 0)
+            reset    : IN std_logic;
+            sw       : IN std_logic_vector (15 DOWNTO 0);
+            vgaRed   : OUT std_logic_vector (3 DOWNTO 0);
+            vgaGreen : OUT std_logic_vector (3 DOWNTO 0);
+            vgaBlue  : OUT std_logic_vector (3 DOWNTO 0);
+            led      : OUT std_logic_vector (15 DOWNTO 0)
         );
     END COMPONENT;
 

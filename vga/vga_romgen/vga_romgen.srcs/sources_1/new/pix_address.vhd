@@ -98,30 +98,44 @@ begin
     process (row_r, col_r)
         -- offset the starting column of the bmp image line by one pixel to 
         -- compensate for 1-clock delay of registered address in the image ROM
-        variable imgCol1 : integer := imgCol0 + 0; 
+        variable imgCol1 : integer := imgCol0 + 1; 
     begin
         if row_r >= imgRow0 and row_r < (imgRow0 + imgH) and 
            col_r >= imgCol1 and col_r < (imgCol1 + imgW)
-      then
-          rgb_ena <= '1';
-      else
-          rgb_ena <= '0';
-      end if;
+        then
+            rgb_ena <= '1';
+        else
+            rgb_ena <= '0';
+        end if;
     end process;
 
     --------------------------------------------------
     process (rgb_ena, rgb_out)
     begin
-        if (rgb_ena = '1')
+        -- default RGB output to black
+        red   <= (others => '0');
+        green <= (others => '0');
+        blue  <= (others => '0');
+
+        -- vertical test bar for manually adjusting H-alignment of VGA panel
+        --if (col_in >= 0 and col_in < 2 and row_in >= 4) -- 2 pixel wide
+        if (col_in = 0 and row_in > 2) or 
+           (col_in = 639) or
+           (row_in = 479) or 
+           (row_in = 0 and col_in >= 320) 
+        then
+            red   <= (others => '1');
+            green <= (others => '0');
+            blue  <= (others => '0');
+        end if;
+
+        if rgb_ena = '1'
         then
             red   <= rgb_out(14 downto 11); -- RBG 555
             green <= rgb_out( 9 downto 6);  -- RBG 555
             blue  <= rgb_out( 4 downto 1);  -- RBG 555
-        else
-            red   <= (others => '0');
-            green <= (others => '0');
-            blue  <= (others => '0');
         end if;
-    end process;
 
+    end process;
+    
 end Behavioral;

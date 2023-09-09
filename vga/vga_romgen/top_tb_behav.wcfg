@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="31637288fs"></ZoomStartTime>
-      <ZoomEndTime time="32783298fs"></ZoomEndTime>
-      <Cursor1Time time="0fs"></Cursor1Time>
+      <ZoomStartTime time="95577765fs"></ZoomStartTime>
+      <ZoomEndTime time="95926221fs"></ZoomEndTime>
+      <Cursor1Time time="95825000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="127"></NameColumnWidth>
+      <NameColumnWidth column_width="123"></NameColumnWidth>
       <ValueColumnWidth column_width="66"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="13" />
+   <WVObjectSize size="16" />
    <wvobject type="logic" fp_name="/top_tb/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -70,5 +70,17 @@
    <wvobject type="logic" fp_name="/top_tb/dut/u_rom_img_gen/rgb_ena">
       <obj_property name="ElementShortName">rgb_ena</obj_property>
       <obj_property name="ObjectShortName">rgb_ena</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/vgaRed">
+      <obj_property name="ElementShortName">vgaRed[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vgaRed[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/vgaBlue">
+      <obj_property name="ElementShortName">vgaBlue[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vgaBlue[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/vgaGreen">
+      <obj_property name="ElementShortName">vgaGreen[3:0]</obj_property>
+      <obj_property name="ObjectShortName">vgaGreen[3:0]</obj_property>
    </wvobject>
 </wave_config>
