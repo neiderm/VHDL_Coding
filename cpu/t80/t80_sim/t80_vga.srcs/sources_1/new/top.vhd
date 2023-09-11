@@ -104,7 +104,8 @@ begin
     --------------------------------------------------
     --VHDL2008 to embed this assigment directly to we port below 
     --work_rams_we <=  not (mem_wr_l or work_ram_cs_l);
-    ram_data_in(7 downto 0) <= cpu_data_out;
+    work_rams_we <= '1'; -- no CS needed, only one writeable device
+    ram_data_in(7 downto 0) <= cpu_data_out; -- 16-bit data bus
 
     u_rams : entity work.rams_08
       port map (

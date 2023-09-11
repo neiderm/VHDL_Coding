@@ -1,8 +1,9 @@
 ; Z80 Test 8/12/2023 RB
+
 org 0
   ld hl, l_ram_start  ;0100   21 00 80
-; xor a               ;       af        a := 0
-  ld  a, 55           ;0103   3e 37     a:=37h     
+; xor a               ;       af        a <= 0
+  ld  a, 55           ;0103   3e 37     a <=37h
 l_loop:
   ld  (hl), a         ;0105   77
   inc a               ;0106   3c

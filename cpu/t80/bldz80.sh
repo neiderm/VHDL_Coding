@@ -5,7 +5,7 @@ echo z80asm $TEST_ASM
 
 z80asm $TEST_ASM
 
-# Old example, dump binary to file, massage it into hex for loading from VHDL code
+# old example, dump binary to file, massage it into hex for loading from VHDL code
 # od -v  -t x1 a.bin | cut -c 9- | tr '\ ' '\n' > ./t80_comp_vga.srcs/sources_1/new/z80test_hex.dat
 
 z80dasm -t a.bin
