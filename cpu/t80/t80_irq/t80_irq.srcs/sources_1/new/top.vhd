@@ -46,6 +46,7 @@ architecture Behavioral of top is
     signal reset_l  : STD_LOGIC;
     signal clk_cntr : STD_LOGIC_VECTOR(3 downto 0);
     signal clk_vga  : STD_LOGIC;
+    signal clk_cpu  : STD_LOGIC;
     signal video_on : STD_LOGIC;
     signal pixel_x  : INTEGER;
     signal pixel_y  : INTEGER;
@@ -74,6 +75,31 @@ begin
     );
 
     clk_vga <= clk_cntr(1); -- vga clock 25 Mhz
+    clk_cpu <= clk_cntr(3); -- 6.25 Mhz
+
+    --------------------------------------------------
+    -- CPU
+    --------------------------------------------------
+    u_cpu : entity work.T80s
+        port map(
+            RESET_n => reset_l,
+            CLK_n   => clk_cpu,
+            WAIT_n  => '1', -- cpu_wait_l,
+            INT_n   => '1', -- cpu_int_l,
+            NMI_n   => '1', -- cpu_nmi_l,
+            BUSRQ_n => '1', -- cpu_busrq_l,
+            M1_n    => open, -- cpu_m1_l,
+            MREQ_n  => open, -- cpu_mreq_l,
+            IORQ_n  => open, -- cpu_iorq_l,
+            RD_n    => open, -- cpu_rd_l,
+            WR_n    => open, --cpu_wr_l,
+            -- RFSH_n  => cpu_rfsh_l,
+            -- HALT_n  => cpu_halt_l,
+            -- BUSAK_n => cpu_busak_l,
+            A       => open, -- cpu_addr,
+            DI      => (others => '0'), -- cpu_data_in,
+            DO      => open --cpu_data_out
+        );
 
     --------------------------------------------------
     -- video subsystem
