@@ -47,6 +47,11 @@ architecture Behavioral of top is
     signal clk_cntr : STD_LOGIC_VECTOR(3 downto 0);
     signal clk_vga  : STD_LOGIC;
     signal clk_cpu  : STD_LOGIC;
+
+    -- cpu
+    signal cpu_addr       : std_logic_vector(15 downto 0);
+    signal prog_rom_data  : std_logic_vector(7 downto 0);
+
     signal video_on : STD_LOGIC;
     signal pixel_x  : INTEGER;
     signal pixel_y  : INTEGER;
@@ -96,9 +101,19 @@ begin
             -- RFSH_n  => cpu_rfsh_l,
             -- HALT_n  => cpu_halt_l,
             -- BUSAK_n => cpu_busak_l,
-            A       => open, -- cpu_addr,
-            DI      => (others => '0'), -- cpu_data_in,
+            A       => cpu_addr,
+            DI      => prog_rom_data, -- cpu_data_in,
             DO      => open --cpu_data_out
+        );
+
+    --------------------------------------------------
+    -- internal program ROM
+    --------------------------------------------------
+    u_program_rom : entity work.prog_rom
+      port map (
+        Clk  => clk_cpu,
+        A    => cpu_addr(5 downto 0), -- ADDR_BITS
+        D    => prog_rom_data
         );
 
     --------------------------------------------------
