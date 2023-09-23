@@ -47,9 +47,11 @@ architecture Behavioral of top is
     signal clk_cntr : STD_LOGIC_VECTOR(3 downto 0);
     signal clk_vga  : STD_LOGIC;
     signal clk_cpu  : STD_LOGIC;
-
     -- cpu
     signal cpu_mreq_l     : std_logic;
+    signal cpu_ioreq_l    : std_logic;
+    signal cpu_int_l      : std_logic;
+    signal cpu_m1_l       : std_logic;
     signal cpu_wr_l       : std_logic;
     signal cpu_addr       : std_logic_vector(15 downto 0);
     signal cpu_data_in    : std_logic_vector(7 downto 0);
@@ -71,7 +73,10 @@ architecture Behavioral of top is
     signal vsync_int : STD_LOGIC;
     signal hsync_int : STD_LOGIC;
 
-    signal toggler   : STD_LOGIC := '0';
+-- int_reg (interrupt register)
+    signal int_reg_clr : STD_LOGIC;
+    signal int_reg_out : STD_LOGIC;
+    signal toggler     : STD_LOGIC := '0';
 
 begin
     --------------------------------------------------
@@ -101,12 +106,12 @@ begin
             RESET_n => reset_l,
             CLK_n   => clk_cpu,
             WAIT_n  => '1', -- cpu_wait_l,
-            INT_n   => '1', -- cpu_int_l,
+            INT_n   => cpu_int_l,
             NMI_n   => '1', -- cpu_nmi_l,
             BUSRQ_n => '1', -- cpu_busrq_l,
-            M1_n    => open, -- cpu_m1_l,
+            M1_n    => cpu_m1_l,
             MREQ_n  => cpu_mreq_l,
-            IORQ_n  => open, -- cpu_iorq_l,
+            IORQ_n  => cpu_ioreq_l,
             RD_n    => open, -- cpu_rd_l,
             WR_n    => cpu_wr_l,
             -- RFSH_n  => cpu_rfsh_l,
@@ -118,6 +123,20 @@ begin
         );
 
     --------------------------------------------------
+    -- IRQ
+    --------------------------------------------------
+    -- /INT is level triggered, must be held until interrupt is acknowledged
+    u_int_reg : entity work.registers_2
+        port map(
+            C     => hsync_int, -- tmp vsync_int,
+            D     => '1',         -- sets latch to 1 on falling edge of C
+            CLR   => int_reg_clr, -- IORQ == 0 and M1 == 0
+            Q     => int_reg_out
+        );
+        cpu_int_l <= NOT(int_reg_out);
+        int_reg_clr <= not (cpu_ioreq_l or cpu_m1_l);
+
+    --------------------------------------------------
     -- primary addr decode (chip selects)
     --------------------------------------------------
     prog_rom_cs_l  <= '0' when cpu_addr(15)           = '0'     else '1'; -- ROM at $0000, RAM at $8000
@@ -127,8 +146,6 @@ begin
         prog_rom_data             when prog_rom_cs_l = '0' else
         ram_data_out(7 downto 0)  when work_ram_cs_l = '0' else
         x"FF"; -- should never be read by CPU?
-    -- cpu data in mux (bus isolation)
---    cpu_data_in  <=  prog_rom_data; -- temp
 
     --------------------------------------------------
     -- work RAM
@@ -153,7 +170,7 @@ begin
     u_program_rom : entity work.prog_rom
       port map (
         Clk  => clk_cpu,
-        A    => cpu_addr(5 downto 0), -- ADDR_BITS
+        A    => cpu_addr(8 downto 0), -- ADDR_BITS
         D    => prog_rom_data
         );
 
