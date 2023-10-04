@@ -10,15 +10,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="0fs"></ZoomStartTime>
-      <ZoomEndTime time="76000001fs"></ZoomEndTime>
-      <Cursor1Time time="76000000fs"></Cursor1Time>
+      <ZoomStartTime time="900000fs"></ZoomStartTime>
+      <ZoomEndTime time="1338501fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="173"></NameColumnWidth>
-      <ValueColumnWidth column_width="83"></ValueColumnWidth>
+      <ValueColumnWidth column_width="71"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="5" />
+   <WVObjectSize size="8" />
    <wvobject type="logic" fp_name="/top_tb/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -27,16 +27,28 @@
       <obj_property name="ElementShortName">reset</obj_property>
       <obj_property name="ObjectShortName">reset</obj_property>
    </wvobject>
-   <wvobject type="array" fp_name="/top_tb/sw">
-      <obj_property name="ElementShortName">sw[15:0]</obj_property>
-      <obj_property name="ObjectShortName">sw[15:0]</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/top_tb/led">
-      <obj_property name="ElementShortName">led[15:0]</obj_property>
-      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+   <wvobject type="logic" fp_name="/top_tb/dut/clk_vga">
+      <obj_property name="ElementShortName">clk_vga</obj_property>
+      <obj_property name="ObjectShortName">clk_vga</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/top_tb/dut/h_sync_l">
       <obj_property name="ElementShortName">h_sync_l</obj_property>
       <obj_property name="ObjectShortName">h_sync_l</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/pixel_x">
+      <obj_property name="ElementShortName">pixel_x</obj_property>
+      <obj_property name="ObjectShortName">pixel_x</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/pixel_y">
+      <obj_property name="ElementShortName">pixel_y</obj_property>
+      <obj_property name="ObjectShortName">pixel_y</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/char_ram_addr">
+      <obj_property name="ElementShortName">char_ram_addr</obj_property>
+      <obj_property name="ObjectShortName">char_ram_addr</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/char_vram_addrv">
+      <obj_property name="ElementShortName">char_vram_addrv[9:0]</obj_property>
+      <obj_property name="ObjectShortName">char_vram_addrv[9:0]</obj_property>
    </wvobject>
 </wave_config>
