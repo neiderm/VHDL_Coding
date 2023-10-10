@@ -26,9 +26,12 @@
 --  ./build.sh zx81.txt  
 --  cd ..
 --  hex2rom -b chargen-maker/zx81.bin charg_rom 9l8s > vga_chargen.srcs/sources_1/new/charg_rom.vhd 
+
 --  </dev/zero head -c 80 | tr '\0' '\46' > tempvram.bin  # \46 == 0x26 == 38 == A
+
 --  hex2rom -b tempvram.bin char_vram 9l8s > vga_chargen.srcs/sources_1/new/char_vram.vhd 
 --
+--  hex2rom  -b redbote_80x60_8bpp_deux.bmp char_vram 13l8s   > vga_chargen.srcs/sources_1/new/char_vram.vhd
 ----------------------------------------------------------------------------------
 
 library IEEE;
@@ -57,24 +60,28 @@ end top;
 
 architecture Behavioral of top is
 
+    constant C_VRAM_ADDR_BITS : integer := 13;
+
     signal reset_l : STD_LOGIC;
     signal clk_cntr : STD_LOGIC_VECTOR(3 downto 0);
     signal clk_vga : STD_LOGIC;
     signal video_on : STD_LOGIC;
-    signal h_sync_l : STD_LOGIC;
-    signal v_sync_l : STD_LOGIC;
 
-    signal h_sync_i : STD_LOGIC;
-    signal v_sync_i : STD_LOGIC;
+    signal hsync_p0 : STD_LOGIC;
+    signal vsync_p0 : STD_LOGIC;
+
+    signal r_hsync : STD_LOGIC;
+    signal r_vsync : STD_LOGIC;
     
     signal pixel_x : integer;
     signal pixel_y : integer;
+
     signal rgb12 : STD_LOGIC_VECTOR(11 downto 0);
 
     signal chargen_rdata : STD_LOGIC_VECTOR(7 downto 0);
     signal chargen_addr : STD_LOGIC_VECTOR(8 downto 0);
 
-    signal char_vram_addr : std_logic_vector(12 downto 0);
+    signal char_vram_addr : std_logic_vector(C_VRAM_ADDR_BITS-1 downto 0);
 
     signal character_code : std_logic_vector(7 downto 0); -- 6-bits character code read from VRAM
 
@@ -114,8 +121,8 @@ begin
         port map(
             pixel_clk => clk_vga, -- 25 Mhz
             reset_n  => '1', -- reset_l,  (RB: no reset, causes DRC warnings regarding BRAM address!)
-            h_sync   => h_sync_l,
-            v_sync   => v_sync_l,
+            h_sync   => hsync_p0,
+            v_sync   => vsync_p0,
             disp_ena => video_on,
             column  => pixel_x,
             row     => pixel_y,
@@ -123,17 +130,13 @@ begin
             n_sync  => open
         );
 
---	process (clk_vga)
---	    variable pix_x_tmp : unsigned(8 downto 0) := TO_UNSIGNED (pixel_x, 9);
---	begin
---		if clk_vga'event and clk_vga = '1' then
---			pix_x_r <= std_logic_vector(;
---		end if;
---	end process;
-
     --------------------------------------------------
      -- decode character address in "VRAM" of currently scanned pixel coordinate
     u_char_vram_addr_gen: entity work.char_addresser
+    generic map(
+        IMG_OFFSET => 218, --set this to header size if generated from .BMP image
+        ADDR_BITS => C_VRAM_ADDR_BITS
+    )
     port map(
         pixel_r => pixel_y,
         pixel_c => pixel_x,
@@ -144,7 +147,7 @@ begin
     u_char_tile_vram: entity work.char_vram
     port map(
         Clk => clk_vga,
-        A => char_vram_addr(8 downto 0),
+        A => char_vram_addr(C_VRAM_ADDR_BITS-1 downto 0),
         D => character_code  -- base row address in character gen ROM = character code * 8
     );
 
@@ -178,8 +181,8 @@ begin
         if clk_vga'event and clk_vga = '1' then
             pix_col_select <= std_logic_vector(to_unsigned(pixel_x, pix_col_select'length));
 
-            h_sync_i <= h_sync_l;
-            v_sync_i <= v_sync_l;
+            r_hsync <= hsync_p0;
+            r_vsync <= vsync_p0;
         end if;
     end process;
 
@@ -196,18 +199,14 @@ begin
     --------------------------------------------------
     -- drive external pins
     --------------------------------------------------
-    Hsync <= h_sync_l;
-    Vsync <= v_sync_l;
---    Vsync <= v_sync_i;
---    Hsync <= h_sync_i;
-    -- rgb12 <= sw(11 downto 0);
+--    Hsync <= h_sync_p0;
+--    Vsync <= v_sync_p0;
+    Vsync <= r_vsync;
+    Hsync <= r_hsync;
+
     vgaRed    <= rgb12(11 downto 8) when video_on = '1' else (others => '0');
     vgaGreen  <= rgb12(7 downto 4) when video_on = '1' else (others => '0');
     vgaBlue   <= rgb12(3 downto 0) when video_on = '1' else (others => '0');
--- This does not work, must be synced to video_on signal!
---    vgaRed    <= sw(11 downto 8);
---    vgaGreen  <= sw(7 downto 4);
---    vgaBlue   <= sw(3 downto 0);
 
     led (15 downto 12) <= sw(15 downto 12);
 

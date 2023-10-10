@@ -34,6 +34,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity char_addresser is
     GENERIC (
+            IMG_OFFSET : integer := 0; -- display a bitmap image, skip the header
             NCOLUMNS : integer := 80;
             ADDR_BITS : integer := 13); -- 8k should be plenty
     Port (
@@ -47,11 +48,11 @@ architecture Behavioral of char_addresser is
 begin
 
 	process (pixel_r, pixel_c)
-        variable i_addr : integer;
+        variable v_addr : integer;
 	begin
 
-        i_addr := pixel_r / 8 * NCOLUMNS + pixel_c / 8;
-        address <= std_logic_vector(to_unsigned(i_addr, address'length));
+        v_addr := IMG_OFFSET + pixel_r / 8 * NCOLUMNS + pixel_c / 8;
+        address <= std_logic_vector(to_unsigned(v_addr, address'length));
 
 	end process;
 
