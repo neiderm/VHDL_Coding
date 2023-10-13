@@ -43,10 +43,14 @@ entity vdc is
 end vdc;
 
 architecture Behavioral of vdc is
+    signal video_on_i : std_logic ;
     signal hsync_p0 : STD_LOGIC;
     signal vsync_p0 : STD_LOGIC;
     signal pixel_x : INTEGER;
     signal pixel_y : INTEGER;
+    signal red : std_logic_vector (7 downto 0);
+    signal green : std_logic_vector (7 downto 0);
+    signal blue : std_logic_vector (7 downto 0);
 begin
     --------------------------------------------------
     --  VGA controller
@@ -68,7 +72,7 @@ begin
             reset_n => '1', -- reset_l,  (RB: no reset, causes DRC warnings regarding BRAM address!)
             h_sync => hsync_p0,
             v_sync => vsync_p0,
-            disp_ena => video_on,
+            disp_ena => video_on_i, -- video_on,
             column => pixel_x,
             row => pixel_y,
             n_blank => open,
@@ -76,4 +80,25 @@ begin
         );
     hsync <= hsync_p0;
     vsync <= vsync_p0;
+    video_on <= video_on_i;
+    --------------------------------------------------
+    --  image generator
+    --------------------------------------------------
+    u_img_view : entity work.hw_image_generator
+        generic map(
+            pixels_x => 320,
+            pixels_y => 240
+            )
+        port map(
+            column => pixel_x,
+            row => pixel_y,
+            red => red,
+            green => green,
+            blue => blue,
+            disp_ena => video_on_i
+        );
+        rgb(11 downto 8) <= red(7 downto 4);
+        rgb(7 downto 4) <= green(7 downto 4);
+        rgb(3 downto 0) <= blue(7 downto 4);
+
 end Behavioral;
