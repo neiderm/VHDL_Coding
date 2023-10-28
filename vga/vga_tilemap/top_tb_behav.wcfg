@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="top_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="723992fs"></ZoomEndTime>
+      <Cursor1Time time="1000000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="123"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="17" />
+   <wvobject type="logic" fp_name="/top_tb/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_vdc/pclk">
+      <obj_property name="ElementShortName">pclk</obj_property>
+      <obj_property name="ObjectShortName">pclk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/reset">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/sw">
+      <obj_property name="ElementShortName">sw[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sw[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/led">
+      <obj_property name="ElementShortName">led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_vdc/h_sync">
+      <obj_property name="ElementShortName">h_sync</obj_property>
+      <obj_property name="ObjectShortName">h_sync</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_vdc/v_sync">
+      <obj_property name="ElementShortName">v_sync</obj_property>
+      <obj_property name="ObjectShortName">v_sync</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/top_tb/dut/u_vdc/disp_ena">
+      <obj_property name="ElementShortName">disp_ena</obj_property>
+      <obj_property name="ObjectShortName">disp_ena</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/pixel_x">
+      <obj_property name="ElementShortName">pixel_x</obj_property>
+      <obj_property name="ObjectShortName">pixel_x</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/pixel_y">
+      <obj_property name="ElementShortName">pixel_y</obj_property>
+      <obj_property name="ObjectShortName">pixel_y</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/u_vram_addr/row_counter">
+      <obj_property name="ElementShortName">row_counter</obj_property>
+      <obj_property name="ObjectShortName">row_counter</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/u_vram_addr/col_counter">
+      <obj_property name="ElementShortName">col_counter</obj_property>
+      <obj_property name="ObjectShortName">col_counter</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/u_vram_addr/row_char_count">
+      <obj_property name="ElementShortName">row_char_count</obj_property>
+      <obj_property name="ObjectShortName">row_char_count</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/top_tb/dut/u_vdc/u_vram_addr/col_char_count">
+      <obj_property name="ElementShortName">col_char_count</obj_property>
+      <obj_property name="ObjectShortName">col_char_count</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/u_vdc/u_vram_addr/vr_address">
+      <obj_property name="ElementShortName">vr_address[13:0]</obj_property>
+      <obj_property name="ObjectShortName">vr_address[13:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/u_vdc/u_vram_addr/row_address">
+      <obj_property name="ElementShortName">row_address[3:0]</obj_property>
+      <obj_property name="ObjectShortName">row_address[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/top_tb/dut/u_vdc/pix_col_select">
+      <obj_property name="ElementShortName">pix_col_select[2:0]</obj_property>
+      <obj_property name="ObjectShortName">pix_col_select[2:0]</obj_property>
+   </wvobject>
+</wave_config>
