@@ -32,7 +32,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity vram_addresser is
     GENERIC (
-        constant IMG_OFFSET : in integer := 0; -- display a bitmap image, skip the header
+        constant IMG_OFFSET : in integer := 0; -- used for .bmp header offset
         constant VGA_COLS : in integer := 640;
         constant VGA_ROWS : in integer := 480;
         constant TILE_WIDTH : in integer := 8;
@@ -52,7 +52,7 @@ architecture Behavioral of vram_addresser is
     signal col_counter : integer := 0;
     signal row_char_count : integer := 0;
     signal col_char_count : integer := 0;
-    signal eof : std_logic := '0';
+    signal eof : std_logic := '0'; -- this is essentially !display_enable
 
 begin
 
@@ -66,24 +66,22 @@ begin
                 row_char_count <= 0;
                 row_counter <= 0;
                 eof <= '0';
-            elsif pix_y > 0 
-            then
-                if pix_x = 0
-                then
-                    if eof = '0'
-                    then
-                        row_counter <= row_counter + 1;
-                        if row_counter = (TILE_HEIGHT - 1)
-                        then
-                            row_counter <= 0;
-                            row_char_count <= row_char_count + CHARS_PER_LINE;
-                        end if;
-                    end if;
 
-                    if pix_y = (VGA_ROWS - 1)
+            elsif pix_x = 0
+            then
+                if eof = '0'
+                then
+                    row_counter <= row_counter + 1;
+                    if row_counter = (TILE_HEIGHT - 1)
                     then
-                         eof <= '1';
+                        row_counter <= 0;
+                        row_char_count <= row_char_count + CHARS_PER_LINE;
                     end if;
+                end if;
+
+                if pix_y = (VGA_ROWS - 1)
+                then
+                     eof <= '1';
                 end if;
             end if;
             -- column address counter
@@ -104,14 +102,14 @@ begin
                 col_char_count <= 0;
             end if;
 
+            if eof = '0' then
+                vr_address(13 downto 0) <= 
+                    std_logic_vector( to_unsigned( IMG_OFFSET + row_char_count + col_char_count, vr_address'length ) );
+            end if;
         end if;
     end process;
 
     row_address <= std_logic_vector(to_unsigned(row_counter, row_address'length));
 
-    vr_address(13 downto 0) <= 
-        std_logic_vector( to_unsigned( IMG_OFFSET + row_char_count + col_char_count, vr_address'length ) )
-    when eof = '0'
-    else (others => '0');
-
 end Behavioral;
+
