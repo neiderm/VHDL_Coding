@@ -104,14 +104,14 @@ begin
                 col_char_count <= 0;
             end if;
 
-            if eof = '0' then
-                vr_address(13 downto 0) <= 
-                    std_logic_vector( to_unsigned( IMG_OFFSET + row_char_count + col_char_count, vr_address'length ) );
-            end if;
-
-            row_address <= std_logic_vector( to_unsigned(row_counter, row_address'length));
-
         end if;
     end process;
+
+    row_address <= std_logic_vector(to_unsigned(row_counter, row_address'length));
+
+    vr_address(13 downto 0) <= 
+        std_logic_vector( to_unsigned( IMG_OFFSET + row_char_count + col_char_count, vr_address'length ) )
+    when eof = '0'
+    else (others => '0');
 
 end Behavioral;
