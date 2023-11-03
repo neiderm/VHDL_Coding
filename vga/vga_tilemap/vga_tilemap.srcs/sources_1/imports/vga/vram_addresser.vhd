@@ -84,6 +84,7 @@ begin
                      eof <= '1';
                 end if;
             end if;
+
             -- column address counter
             col_counter <= col_counter + 1;
             if col_counter = (TILE_WIDTH - 1)
@@ -112,4 +113,3 @@ begin
     row_address <= std_logic_vector(to_unsigned(row_counter, row_address'length));
 
 end Behavioral;
-
