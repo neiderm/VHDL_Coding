@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="crtc_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="crtc_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="25236629fs"></ZoomStartTime>
+      <ZoomEndTime time="26856320fs"></ZoomEndTime>
+      <Cursor1Time time="26385000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="123"></NameColumnWidth>
+      <ValueColumnWidth column_width="66"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="19" />
+   <wvobject type="logic" fp_name="/crtc_tb/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/reset">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/sw">
+      <obj_property name="ElementShortName">sw[15:0]</obj_property>
+      <obj_property name="ObjectShortName">sw[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/led">
+      <obj_property name="ElementShortName">led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">led[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/disp_ena">
+      <obj_property name="ElementShortName">disp_ena</obj_property>
+      <obj_property name="ObjectShortName">disp_ena</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/hsync">
+      <obj_property name="ElementShortName">hsync</obj_property>
+      <obj_property name="ObjectShortName">hsync</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/vsync">
+      <obj_property name="ElementShortName">vsync</obj_property>
+      <obj_property name="ObjectShortName">vsync</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/char_clock">
+      <obj_property name="ElementShortName">char_clock</obj_property>
+      <obj_property name="ObjectShortName">char_clock</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/dut/u_vdc/char_col_cntr">
+      <obj_property name="ElementShortName">char_col_cntr[6:0]</obj_property>
+      <obj_property name="ObjectShortName">char_col_cntr[6:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/disp_ena_p0">
+      <obj_property name="ElementShortName">disp_ena_p0</obj_property>
+      <obj_property name="ObjectShortName">disp_ena_p0</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/dut/u_vdc/scan_line_cntr">
+      <obj_property name="ElementShortName">scan_line_cntr[9:0]</obj_property>
+      <obj_property name="ObjectShortName">scan_line_cntr[9:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/dut/u_vdc/char_row_accum">
+      <obj_property name="ElementShortName">char_row_accum[13:0]</obj_property>
+      <obj_property name="ObjectShortName">char_row_accum[13:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/crtc_tb/dut/u_vdc/vr_address">
+      <obj_property name="ElementShortName">vr_address[13:0]</obj_property>
+      <obj_property name="ObjectShortName">vr_address[13:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/hsync_q1">
+      <obj_property name="ElementShortName">hsync_q1</obj_property>
+      <obj_property name="ObjectShortName">hsync_q1</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/vsync_q1">
+      <obj_property name="ElementShortName">vsync_q1</obj_property>
+      <obj_property name="ObjectShortName">vsync_q1</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/hsync_q0">
+      <obj_property name="ElementShortName">hsync_q0</obj_property>
+      <obj_property name="ObjectShortName">hsync_q0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/vsync_q0">
+      <obj_property name="ElementShortName">vsync_q0</obj_property>
+      <obj_property name="ObjectShortName">vsync_q0</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/hsync_in">
+      <obj_property name="ElementShortName">hsync_in</obj_property>
+      <obj_property name="ObjectShortName">hsync_in</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/crtc_tb/dut/u_vdc/u_vr_addr/vsync_in">
+      <obj_property name="ElementShortName">vsync_in</obj_property>
+      <obj_property name="ObjectShortName">vsync_in</obj_property>
+   </wvobject>
+</wave_config>
