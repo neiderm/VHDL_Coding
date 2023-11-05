@@ -44,11 +44,17 @@ entity crtc_top is
 end crtc_top;
 
 architecture Behavioral of crtc_top is
+    signal reset_l : std_logic;
     signal clock_refs : std_logic_vector(3 downto 0);
     signal clk_25 : std_logic;
+    signal clk_cpu : std_logic;
     signal video_on : std_logic;
     signal rgb : std_logic_vector (11 downto 0);
 begin
+    --------------------------------------------------
+    --  inputs
+    --------------------------------------------------
+    reset_l <= not reset;
 
    --------------------------------------------------
     --  clock reference
@@ -61,6 +67,31 @@ begin
     );
 
     clk_25 <= clock_refs(1);
+    clk_cpu <= clock_refs(3);
+
+    --------------------------------------------------
+    -- CPU
+    --------------------------------------------------
+    u_cpu : entity work.T80s
+        port map(
+            RESET_n => reset_l,
+            CLK_n   => clk_cpu,
+            WAIT_n  => '1', -- cpu_wait_l,
+            INT_n   => '1', -- cpu_int_l,
+            NMI_n   => '1', -- cpu_nmi_l,
+            BUSRQ_n => '1', -- cpu_busrq_l,
+            M1_n    => open, -- cpu_m1_l,
+            MREQ_n  => open, -- cpu_mreq_l,
+            IORQ_n  => open, -- cpu_ioreq_l,
+            RD_n    => open, -- cpu_rd_l,
+            WR_n    => open, -- cpu_wr_l,
+            -- RFSH_n  => cpu_rfsh_l,
+            -- HALT_n  => cpu_halt_l,
+            -- BUSAK_n => cpu_busak_l,
+            A       => open, -- cpu_addr,
+            DI      => (others => '0'), -- cpu_data_in,
+            DO      => open -- cpu_data_out
+        );
 
     --------------------------------------------------
     --  VGA controller
