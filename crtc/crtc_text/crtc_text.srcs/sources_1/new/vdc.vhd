@@ -40,6 +40,9 @@ entity vdc is
     );
     Port ( pclk : in STD_LOGIC;
            reset : in STD_LOGIC;
+           address_in : in std_logic_vector(13 downto 0);
+           data_in : in std_logic_vector(7 downto 0);
+           vram_wr_en : in std_logic;
            hsync : out STD_LOGIC;
            vsync : out STD_LOGIC;
            rgb : out STD_LOGIC_VECTOR (11 downto 0);
@@ -72,7 +75,8 @@ architecture Behavioral of vdc is
     signal rom_addr : std_logic_vector(8 downto 0);
     signal chargen_rdata : std_logic_vector(7 downto 0);
 
-    signal vram_dat_tmp : std_logic_vector(15 downto 0);
+    signal vram_dout_tmp : std_logic_vector(15 downto 0);
+    signal vram_din_tmp : std_logic_vector(15 downto 0);
 
     signal pixel_bit : std_logic; -- bit output from mux
     signal pix_col_select : std_logic_vector(2 downto 0);
@@ -140,7 +144,6 @@ begin
 
     --------------------------------------------------
     -- Dual-Port RAM with One Enable Controlling Both Ports
-    --
     -- Download: ftp://ftp.xilinx.com/pub/documentation/misc/xstug_examples.zip
     -- File: HDL_Coding_Techniques/rams/rams_13.vhd
     --------------------------------------------------
@@ -148,14 +151,16 @@ begin
     port map(
         clk => pclk,
         en => '1',
-        we => '0',
-        addra => (others => '0'),
-        addrb => vram_addr(6 downto 0),
-        di => (others => '0'),
+        we => vram_wr_en,
+        addra => address_in(6 downto 0), -- CPU address bus
+        addrb => vram_addr(6 downto 0), -- video system address bus
+        di => vram_din_tmp, -- data in, only from CPU data bus
         doa => open,
-        dob => vram_dat_tmp -- vram_charcode
+        dob => vram_dout_tmp -- data out to video system
     );
-    vram_charcode <= vram_dat_tmp(7 downto 0);
+    -- convert RAM data width to system data bus width
+    vram_din_tmp(7 downto 0) <= data_in;
+    vram_charcode <= vram_dout_tmp(7 downto 0);
 
     --------------------------------------------------
     -- character generator ROM address decoder
