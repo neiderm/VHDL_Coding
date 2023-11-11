@@ -21,9 +21,16 @@ org 0x0038
 ;  ld  a, (hl)
 ;  add a, 0x5A
 ;  dec l
-  inc a
-  inc l
-  ld  (hl), a
+;  inc a
+;  inc l
+;  ld  (hl), a
+
+    inc e
+    ld  a, e
+    out (0x80), a
+
+    inc l
+    ld  (hl), a
 
 rst38_out:
   exx                 ; restore BC, DE, and HL
@@ -46,7 +53,6 @@ org 0x0066
 
     ld hl, l_vram_start
     add l, a
-    ld a, hl
 
     exx
     ex   af, af'    ; restore AF
