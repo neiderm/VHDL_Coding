@@ -34,7 +34,7 @@ entity crtc_top is
     Port ( clk : in STD_LOGIC;
            sw : in STD_LOGIC_VECTOR (15 downto 0);
            reset : in STD_LOGIC;
-           btnU : in std_logic;
+           btn : in STD_LOGIC_VECTOR (3 downto 0);
            led : out STD_LOGIC_VECTOR (15 downto 0);
            vgaRed : out STD_LOGIC_VECTOR (3 downto 0);
            vgaGreen : out STD_LOGIC_VECTOR (3 downto 0);
@@ -91,9 +91,17 @@ architecture Behavioral of crtc_top is
     signal io_wr_l        : std_logic;
     signal io_rd_l        : std_logic;
 
-    signal outport_reg    : std_logic_vector(7 downto 0);
-    signal outport_cs_l   : std_logic;
-    signal outport_ce     : std_logic; -- active high enable to output port register
+    signal out0_reg    : std_logic_vector(7 downto 0);
+    signal out0_cs_l   : std_logic;
+    signal out0_ce     : std_logic; -- active high enable to output port register
+
+    signal out1_reg    : std_logic_vector(7 downto 0);
+    signal out1_cs_l   : std_logic;
+    signal out1_ce     : std_logic; -- active high enable to output port register
+
+    signal in0_inp_reg    : std_logic_vector(7 downto 0);
+    signal in0_dat_reg    : std_logic_vector(7 downto 0);
+    signal in0_cs_l       : std_logic;
 
 begin
     --------------------------------------------------
@@ -130,7 +138,21 @@ begin
     cpu_int_l <=  not int_reg_out;
 
     -- NMI is edge triggered
-    cpu_nmi_l <= not btnU; 
+    cpu_nmi_l <= '0' when btn(0) = '1' or btn(1) = '1' or btn(2) = '1' or btn(3) = '1' else '1'; 
+
+    --------------------------------------------------
+    -- input port
+    --------------------------------------------------
+    in0_inp_reg <= sw(15 downto 8);
+
+    u_inp0_reg : entity work.registers_1
+    port map (
+        clk  => clk_cpu,
+        ce   => '1', -- clock enable, active high
+        clr  => reset,
+        d_in => in0_inp_reg,
+        dout => in0_dat_reg
+    );
 
     --------------------------------------------------
     -- internal program ROM
@@ -172,7 +194,11 @@ begin
     program_rom_cs_l <= '0' when cpu_address(15)           = '0'     else '1'; -- ROM at $0000
     work_ram_cs_l    <= '0' when cpu_address(15 downto 11) = "10000" else '1'; -- Work RAM at $8000
     video_ram_cs_l   <= '0' when cpu_address(15 downto 11) = "10001" else '1'; -- VRAM at $8800
-    outport_cs_l     <= '0' when cpu_address(7 downto 1) = "1000000" else '1'; -- OUT port at $80, 2-bytes, so exclude addr(0)
+
+    out0_cs_l        <= '0' when cpu_address(7 downto 1) = "1000000" else '1'; -- OUT port at $80, 2-bytes, so exclude addr(0)
+    out1_cs_l        <= '0' when cpu_address(7 downto 1) = "1000001" else '1'; -- OUT port at $82, 2-bytes, so exclude addr(0)
+
+    in0_cs_l         <= '0' when cpu_address(7 downto 1) = "1000010" else '1';  -- IN port at $84, 2-bytes, so exclude addr(0)
 
     mem_wr_l         <= cpu_wr_l or cpu_mreq_l;  -- WR==0 and MREQ==0
     io_rd_l          <= cpu_rd_l or cpu_iorq_l;  -- RD==0 and IOREQ==0
@@ -180,8 +206,12 @@ begin
 
     -- cpu data in mux (bus isolation)
     cpu_data_in  <=
+
+        in0_dat_reg               when in0_cs_l = '0' and io_rd_l = '0' else
+
         program_rom_data          when program_rom_cs_l = '0' else
         ram_data_out(7 downto 0)  when work_ram_cs_l = '0'    else
+
         x"FF";
 
     --------------------------------------------------
@@ -221,18 +251,32 @@ begin
     --------------------------------------------------
     -- output port
     --------------------------------------------------
-    outport_ce <= not (outport_cs_l or io_wr_l);
+    out0_ce <= not (out0_cs_l or io_wr_l);
 
-    u_gpout_reg : entity work.registers_1
+    u_outp0_reg : entity work.registers_1
     port map (
         clk  => clk_cpu,
-        ce   => outport_ce,  -- chip enable, active high
+        ce   => out0_ce,  -- chip enable, active high
         clr  => reset,
         d_in => cpu_data_out,
-        dout => outport_reg
+        dout => out0_reg
     );
 
-    led(3 downto 0)  <= outport_reg(7 downto 4);
+    led(7 downto 0)  <= out0_reg(7 downto 0);
+
+    --------------------------------------------------
+    out1_ce <= not (out1_cs_l or io_wr_l);
+
+    u_outp1_reg : entity work.registers_1
+    port map (
+        clk  => clk_cpu,
+        ce   => out1_ce,  -- chip enable, active high
+        clr  => reset,
+        d_in => cpu_data_out,
+        dout => out1_reg
+    );
+
+    led(15 downto 8)  <= out1_reg(7 downto 0);
 
     --------------------------------------------------
     --  output signals

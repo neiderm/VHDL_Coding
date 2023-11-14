@@ -41,14 +41,14 @@ architecture Behavioral of crtc_tb is
         PORT (
             clk : IN std_logic;
             reset    : IN std_logic;
-            btnU     : IN std_logic;
+            btn      : IN std_logic_vector(3 downto 0);
             sw       : IN std_logic_vector (15 DOWNTO 0);
             led      : OUT std_logic_vector (15 DOWNTO 0)
         );
     END COMPONENT;
 
     SIGNAL clk : std_logic := '0';
-    SIGNAL btnU : std_logic := '0';
+    SIGNAL btn : std_logic_vector(3 downto 0) := (others => '1');
     SIGNAL reset : std_logic;
     SIGNAL sw : std_logic_vector (15 DOWNTO 0) := "0000101001011010";
     SIGNAL led : std_logic_vector (15 DOWNTO 0);
@@ -61,7 +61,7 @@ begin
     dut : crtc_top
     PORT MAP(
         clk => clk,
-        btnU => btnU,
+        btn => btn,
         reset => reset, 
         sw => sw, 
         led => led

@@ -16,20 +16,15 @@ org 0x0038
   exx                 ; exchanges BC, DE, and HL with shadow registers with BC', DE', and HL'.
   ex   af, af'        ; save AF, it's not part of the exx exchange
 
-;  ld  hl, l_vram_start + 1
-;  inc (hl)
-;  ld  a, (hl)
-;  add a, 0x5A
-;  dec l
-;  inc a
-;  inc l
-;  ld  (hl), a
+    in a, (0x84)
+    out (0x82), a
 
-    inc e
-    ld  a, e
+    inc c
+    ld  a, c
     out (0x80), a
 
-    inc l
+    ; hl points to VRAM, is reloaded in NMI
+    inc hl
     ld  (hl), a
 
 rst38_out:
@@ -51,8 +46,11 @@ org 0x0066
     exx             ; exchanges BC, DE, and HL with shadow registers with BC', DE', and HL'.
     ex   af, af'    ; save AF, it's not part of the exx exchange
 
+    ; restarts the VRAM pointer so we can see something happen on the screen
     ld hl, l_vram_start
-    add l, a
+    ld a, l
+    add a, 10
+    ld l, a
 
     exx
     ex   af, af'    ; restore AF
@@ -89,6 +87,11 @@ l_loop:
   ld  a, (hl)         ; A=2
 
   jr  l_loop
+
+
+org 0x5000
+l_in0_reg:
+  db  00
 
 org 0x8000
 l_ram_start:
